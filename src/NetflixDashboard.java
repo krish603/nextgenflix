@@ -227,7 +227,7 @@ public class NetflixDashboard extends JFrame {
         return contentRow;
     }
 
-    private JPanel createPlaceholderPanel() {
+    public JPanel createPlaceholderPanel() {
         JPanel placeholderPanel = new JPanel();
         placeholderPanel.setPreferredSize(new Dimension(200, 300));
         placeholderPanel.setBackground(Color.DARK_GRAY);
@@ -235,7 +235,7 @@ public class NetflixDashboard extends JFrame {
     }
 
     // SwingWorker to load movie panels asynchronously
-    private class MoviePanelLoader extends SwingWorker<JPanel, Void> {
+    public class MoviePanelLoader extends SwingWorker<JPanel, Void> {
         private JPanel placeholderPanel;
         private String title;
         private String imagePath;

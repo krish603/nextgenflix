@@ -161,9 +161,51 @@ public class MovieFrame extends JFrame{
             String title = "Movie "+count;
             String description = "This is the description for " + title + ".";
             JPanel moviePanel = NetflixDashboard.createMoviePanel(title, imagePath, description);
-            contentGrid.add(moviePanel);
+            JPanel placeholderPanel = createPlaceholderPanel();
+            contentGrid.add(moviePanel,placeholderPanel);
+            new MoviePanelLoader(placeholderPanel, title, imagePath, description);
         }
 
         return contentGrid;
     }
+
+    public JPanel createPlaceholderPanel() {
+        JPanel placeholderPanel = new JPanel();
+        placeholderPanel.setPreferredSize(new Dimension(200, 300));
+        placeholderPanel.setBackground(Color.DARK_GRAY);
+        return placeholderPanel;
+    }
+
+    public class MoviePanelLoader extends SwingWorker<JPanel, Void> {
+        private JPanel placeholderPanel;
+        private String title;
+        private String imagePath;
+        private String description;
+
+        public MoviePanelLoader(JPanel placeholderPanel, String title, String imagePath, String description) {
+            this.placeholderPanel = placeholderPanel;
+            this.title = title;
+            this.imagePath = imagePath;
+            this.description = description;
+        }
+
+        @Override
+        protected JPanel doInBackground() {
+            return NetflixDashboard.createMoviePanel(title, imagePath, description);
+        }
+
+        @Override
+        protected void done() {
+            try {
+                JPanel moviePanel = get();
+                placeholderPanel.removeAll();
+                placeholderPanel.setLayout(new BorderLayout());
+                placeholderPanel.add(moviePanel);
+                placeholderPanel.revalidate();
+                placeholderPanel.repaint();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    } 
 }
