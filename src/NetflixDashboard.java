@@ -2,10 +2,9 @@ package src;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.List;
-import java.util.ArrayList;
 
 public class NetflixDashboard extends JFrame {
+    private JPanel contentRow;
 
     public NetflixDashboard() {
         // Set the frame properties
@@ -22,10 +21,24 @@ public class NetflixDashboard extends JFrame {
         JPanel navBar = createNavBar();
         mainPanel.add(navBar, BorderLayout.NORTH);
 
-        // Create the grid of movie thumbnails
-        JPanel contentGrid = createContentGrid();
-        JScrollPane scrollPane = new JScrollPane(contentGrid);
-        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER); // Disable horizontal scrolling
+        // Create the content panel with movies, TV shows, and Top 10 sections
+        JPanel contentPanel = new JPanel();
+        contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
+
+        // Movies slider
+        contentPanel.add(createSectionWithTitleAndSlider("Movies", getMovieImagePaths()));
+
+        // TV Shows slider
+        contentPanel.add(createSectionWithTitleAndSlider("TV Shows", getTVShowImagePaths()));
+
+        // Best Movies Slider
+        contentPanel.add(createSectionWithTitleAndSlider("Best Movies", getBestMoviesImagePaths()));
+
+        // Best Tv Shows slider
+        contentPanel.add(createSectionWithTitleAndSlider("Best TV Shows", getBestTvShowsImagePaths()));
+
+        // Add the content panel to the main panel
+        JScrollPane scrollPane = new JScrollPane(contentPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         mainPanel.add(scrollPane, BorderLayout.CENTER);
 
         // Make the frame visible
@@ -52,116 +65,154 @@ public class NetflixDashboard extends JFrame {
         navBar.add(Box.createHorizontalGlue()); // Push items to the right
         navBar.add(home);
 
-        // Add navigation links
-        String[] navItems = {"TV Shows", "Movies", "My List"};
-        for (String item : navItems) {
-            JLabel navItem = new JLabel(item);
-            navItem.setFont(new Font("Serif", Font.PLAIN, 18));
-            navItem.setForeground(Color.WHITE);
-            navItem.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-            navItem.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 20));
-            navBar.add(Box.createHorizontalGlue()); // Push items to the right
-            navBar.add(navItem);
-        }
+        JButton Movies = new JButton("Movies");
+        Movies.setFont(new Font("Serif", Font.PLAIN, 18));
+        Movies.setForeground(Color.WHITE);
+        Movies.setBackground(Color.BLACK);
+        Movies.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 20));
+        Movies.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        Movies.addActionListener(e -> showMovieFrame());
+        Movies.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 20));
+        navBar.add(Box.createHorizontalGlue()); // Push items to the right
+        navBar.add(Movies);
+
+        JButton TVShow = new JButton("TV Shows");
+        TVShow.setFont(new Font("Serif", Font.PLAIN, 18));
+        TVShow.setForeground(Color.WHITE);
+        TVShow.setBackground(Color.BLACK);
+        TVShow.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 20));
+        TVShow.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        Movies.addActionListener(e -> showTVShowsFrame());
+        TVShow.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 20));
+        navBar.add(Box.createHorizontalGlue()); // Push items to the right
+        navBar.add(TVShow);
+
+        JButton MyList = new JButton("My List");
+        MyList.setFont(new Font("Serif", Font.PLAIN, 18));
+        MyList.setForeground(Color.WHITE);
+        MyList.setBackground(Color.BLACK);
+        MyList.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 20));
+        MyList.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        Movies.addActionListener(e -> showListFrame());
+        MyList.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 20));
+        navBar.add(Box.createHorizontalGlue()); // Push items to the right
+        navBar.add(MyList);
 
         return navBar;
     }
 
-    private JPanel createContentGrid() {
-        JPanel contentGrid = new JPanel(new GridLayout(7, 5, 10, 10)); // 3 rows, 5 columns, 10px gaps
-        contentGrid.setBackground(Color.DARK_GRAY);
-        contentGrid.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-    
-        // Example movie details (title, image path, description)
-        String[] imagePaths = {
-            "assets/img/Posters/12_2_929c555a-bd2c-4d1f-b1c8-9d0cf2e88615.png",
-            "assets/img/Posters/29_2_362c9118-1045-4fcb-b4ad-d8d83831da70.png",
-            "assets/img/Posters/34_2_2fc257d7-11e8-4ffe-87a1-bade8b297d88.png",
-            "assets/img/Posters/Oppenheimer.png",
-            "assets/img/Posters/61jBc4kTVSL._AC_UF1000,1000_QL80_.png",
-            "assets/img/Posters/71FbCxxC4zL._AC_UF894,1000_QL80_.png",
-            "assets/img/Posters/action-movie-poster-template-design-0f5fff6262fdefb855e3a9a3f0fdd361_screen.png",
-            "assets/img/Posters/adventure-movie-poster-template-design-7b13ea2ab6f64c1ec9e1bb473f345547_screen.png",
-            "assets/img/Posters/custom-made-hollywood-movie-posters-2.png",
-            "assets/img/Posters/e5751316c3b567b2e17c914c5c51c85d.png",
-            "assets/img/Posters/il_570xN.2835655237_4h8m.png",
-            "assets/img/Posters/l_434409_bab40b66.png",
-            "assets/img/Posters/lady-vengeance-b.png",
-            "assets/img/Posters/MOVCJ3054__57379.png",
-            "assets/img/Posters/movie-poster-template-design-21a1c803fe4ff4b858de24f5c91ec57f_screen.png",
-            "assets/img/Posters/PG2_Copy_4bef8a47-f239-44aa-97ba-aa0da4b4de38.png",
-            "assets/img/Posters/PG17_2_Copy.png",
-            "assets/img/Posters/PG100_Copy_3c7a4544-1585-46b3-820d-b6d036653aed.png",
-            "assets/img/Posters/PG107_Copy_cef8be77-761a-4d03-9dfc-91f3a78d5635.png",
-            "assets/img/Posters/PG159_3_75fc1279-996b-4f8d-a1b7-3dfa0e32277a.png",
-            "assets/img/Posters/pg1013.png",
-            "assets/img/Posters/pg1599.png",
-            "assets/img/Posters/pg1678.png",
-            "assets/img/Posters/PGMG080_Copy.png",
-            "assets/img/Posters/s-l1200 (1).png",
-            "assets/img/Posters/s-l1200.png",
-            "assets/img/Posters/Shawshank_Redemption_-_Hope_Is_Good_Thing_Copy.png",
-            "assets/img/Posters/small-hollywood-movie-poster-blade-runner-2049-ridley-scott-original-imaf3qvx88xenydd.png",
-            "assets/img/Posters/unnamed.png",
-            "assets/img/Posters/Zindagi_Na_Milegi_Dobara_Minimal-NGPS2076.png",
-            "assets/img/Posters/81jxal5C+uL._AC_UF1000,1000_QL80_.jpg",
-            "assets/img/Posters/c104f1bfed20481f35bc96cb9addc940_240x360_crop_center.progressive.png",
-            "assets/img/Posters/movie-poster-design-template_841014-16988.png"
-        };
-
-        // Add placeholder panels for each movie
-        for (int i = 1; i <= imagePaths.length; i++) {
-            String title = "Movie " + i;
-            String description = "This is the description for Movie " + i + ".";
-            JPanel placeholderPanel = createPlaceholderPanel();
-            contentGrid.add(placeholderPanel);
-            
-            // Load movie panels asynchronously
-            new MoviePanelLoader(placeholderPanel, title, imagePaths[i - 1], description).execute();
-        }
-
-        return contentGrid;
+    private void showListFrame() {
+        this.dispose();
+        MyListFrame list = new MyListFrame();
+        list.setVisible(true);
     }
 
-    private JPanel createPlaceholderPanel() {
-        JPanel placeholderPanel = new JPanel();
-        placeholderPanel.setPreferredSize(new Dimension(200, 300));
-        placeholderPanel.setBackground(Color.DARK_GRAY);
-        return placeholderPanel;
+    private void showTVShowsFrame() {
+        this.dispose();
+        TVShowFrame tvshow = new TVShowFrame();
+        tvshow.setVisible(true);
     }
 
-    // SwingWorker to load movie panels asynchronously
-    private class MoviePanelLoader extends SwingWorker<JPanel, Void> {
-        private JPanel placeholderPanel;
-        private String title;
-        private String imagePath;
-        private String description;
+    private void showMovieFrame() {
+        this.dispose();
+        MovieFrame movie = new MovieFrame();
+        movie.setVisible(true);
+    }
 
-        public MoviePanelLoader(JPanel placeholderPanel, String title, String imagePath, String description) {
-            this.placeholderPanel = placeholderPanel;
-            this.title = title;
-            this.imagePath = imagePath;
-            this.description = description;
+    private JPanel createSectionWithTitleAndSlider(String title, String[] imagePaths) {
+        JPanel sectionPanel = new JPanel();
+        sectionPanel.setLayout(new BoxLayout(sectionPanel, BoxLayout.Y_AXIS));
+
+        JLabel sectionTitle = new JLabel(title);
+        sectionTitle.setFont(new Font("Serif", Font.BOLD, 24));
+        sectionTitle.setForeground(Color.BLACK);
+        sectionTitle.setAlignmentX(Component.LEFT_ALIGNMENT);
+        sectionPanel.add(sectionTitle);
+
+        if (title.equals("Movies")) {
+            contentRow = createContentRowForMovies(imagePaths);
+        } else if (title.equals("TV Shows")) {
+            contentRow = createContentRowForTVShows(imagePaths);
+        } else if (title.equals("Best Movies")) {
+            contentRow = createContentRowForBestMovies(imagePaths);
+        } else {
+            contentRow = createContentRowForBestTVShow(imagePaths);
         }
 
-        @Override
-        protected JPanel doInBackground() {
-            return createMoviePanel(title, imagePath, description);
+
+        JScrollPane sliderScrollPane = new JScrollPane(contentRow, JScrollPane.VERTICAL_SCROLLBAR_NEVER, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        sliderScrollPane.getHorizontalScrollBar().setUnitIncrement(16); // Set horizontal scroll speed
+        sectionPanel.add(sliderScrollPane);
+
+        return sectionPanel;
+    }
+
+    private JPanel createContentRowForMovies(String[] imagePaths) {
+        JPanel contentRow = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
+        contentRow.setBackground(Color.DARK_GRAY);
+
+        int count = 0;
+        // Load all images in the row
+        for (String imagePath : imagePaths) {
+            count++;
+            String title = "Movie "+count;
+            String description = "This is the description for " + title + ".";
+            JPanel moviePanel = createMoviePanel(title, imagePath, description);
+            contentRow.add(moviePanel);
         }
 
-        @Override
-        protected void done() {
-            try {
-                JPanel moviePanel = get();
-                placeholderPanel.removeAll();
-                placeholderPanel.setLayout(new BorderLayout());
-                placeholderPanel.add(moviePanel);
-                placeholderPanel.revalidate();
-                placeholderPanel.repaint();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+        return contentRow;
+    }
+
+    private JPanel createContentRowForTVShows(String[] imagePaths) {
+        JPanel contentRow = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
+        contentRow.setBackground(Color.DARK_GRAY);
+
+        int count = 0;
+        // Load all images in the row
+        for (String imagePath : imagePaths) {
+            count++;
+            String title = "TV Show "+count;
+            String description = "This is the description for " + title + ".";
+            JPanel moviePanel = createMoviePanel(title, imagePath, description);
+            contentRow.add(moviePanel);
         }
+
+        return contentRow;
+    }
+
+    private JPanel createContentRowForBestMovies(String[] imagePaths) {
+        JPanel contentRow = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
+        contentRow.setBackground(Color.DARK_GRAY);
+
+        int count = 0;
+        // Load all images in the row
+        for (String imagePath : imagePaths) {
+            count++;
+            String title = "Movie "+count;
+            String description = "This is the description for " + title + ".";
+            JPanel moviePanel = createMoviePanel(title, imagePath, description);
+            contentRow.add(moviePanel);
+        }
+
+        return contentRow;
+    }
+
+    private JPanel createContentRowForBestTVShow(String[] imagePaths) {
+        JPanel contentRow = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
+        contentRow.setBackground(Color.DARK_GRAY);
+
+        int count = 0;
+        // Load all images in the row
+        for (String imagePath : imagePaths) {
+            count++;
+            String title = "TV Show "+count;
+            String description = "This is the description for " + title + ".";
+            JPanel moviePanel = createMoviePanel(title, imagePath, description);
+            contentRow.add(moviePanel);
+        }
+
+        return contentRow;
     }
 
     private JPanel createMoviePanel(String title, String imagePath, String description) {
@@ -180,7 +231,7 @@ public class NetflixDashboard extends JFrame {
         thumbnail.setPreferredSize(new Dimension(200, 300)); // Adjust size as needed
         moviePanel.add(thumbnail, BorderLayout.CENTER);
 
-        // Add the movie title below the thumbnail
+        // Add the title below the thumbnail
         JLabel titleLabel = new JLabel(title, SwingConstants.CENTER);
         titleLabel.setFont(new Font("Serif", Font.PLAIN, 14));
         titleLabel.setForeground(Color.WHITE);
@@ -190,11 +241,85 @@ public class NetflixDashboard extends JFrame {
         thumbnail.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         thumbnail.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                new MovieDetailFrame(title, imagePath, description); // Create new MovieDetailFrame here with the movie detailsnew MovieDetailFrame(title, imagePath, description);
+                new MovieDetailFrame(title, imagePath, description); // Create new MovieDetailFrame here with the movie details
             }
         });
 
         return moviePanel;
+    }
+
+    // Dummy data for movie image paths
+    private String[] getMovieImagePaths() {
+        return new String[]{
+            "assets/img/Posters/12_2_929c555a-bd2c-4d1f-b1c8-9d0cf2e88615.png",
+            "assets/img/Posters/29_2_362c9118-1045-4fcb-b4ad-d8d83831da70.png",
+            "assets/img/Posters/34_2_2fc257d7-11e8-4ffe-87a1-bade8b297d88.png",
+            "assets/img/Posters/Oppenheimer.png",
+            "assets/img/Posters/61jBc4kTVSL._AC_UF1000,1000_QL80_.png",
+            "assets/img/Posters/71FbCxxC4zL._AC_UF894,1000_QL80_.png",
+            // "assets/img/Posters/action-movie-poster-template-design-0f5fff6262fdefb855e3a9a3f0fdd361_screen.png",
+            // "assets/img/Posters/adventure-movie-poster-template-design-7b13ea2ab6f64c1ec9e1bb473f345547_screen.png",
+            // "assets/img/Posters/f7eb970d-97f6-420e-9964-547aaae1898b-min.png",
+            // "assets/img/Posters/ff8be05a431a19f15e66ac789b1a99b0.png",
+            // "assets/img/Posters/gg.png",
+            // "assets/img/Posters/ggggggg.png",
+            // "assets/img/Posters/mn-min.png",
+            // "assets/img/Posters/modern-movie-poster-template-design-dcab0ce86a7861c1c9b8d2c5d8f55e0a_screen.png",
+            // "assets/img/Posters/nollywood-movie-posters-nigerian.png",
+            // "assets/img/Posters/old-movie-poster.png"
+        };
+    }
+
+    // Dummy data for TV show image paths
+    private String[] getTVShowImagePaths() {
+        return new String[]{
+            "assets/img/Posters/tvshow1.png",
+            "assets/img/Posters/tvshow2.png",
+            "assets/img/Posters/tvshow3.png",
+            "assets/img/Posters/tvshow4.png",
+            "assets/img/Posters/tvshow5.png",
+            "assets/img/Posters/tvshow6.png",
+            // "assets/img/Posters/tvshow7.png",
+            // "assets/img/Posters/tvshow8.png",
+            // "assets/img/Posters/tvshow9.png",
+            // "assets/img/Posters/tvshow10.png",
+            // "assets/img/Posters/tvshow11.png",
+            // "assets/img/Posters/tvshow12.png",
+            // "assets/img/Posters/tvshow13.png",
+            // "assets/img/Posters/tvshow14.png",
+            // "assets/img/Posters/tvshow15.png"
+        };
+    }
+
+    // Dummy data for Top 10 image paths
+    private String[] getBestMoviesImagePaths() {
+        return new String[]{
+            "assets/img/Posters/top10_1.png",
+            "assets/img/Posters/top10_2.png",
+            "assets/img/Posters/top10_3.png",
+            "assets/img/Posters/top10_4.png",
+            "assets/img/Posters/top10_5.png",
+            "assets/img/Posters/top10_6.png",
+            // "assets/img/Posters/top10_7.png",
+            // "assets/img/Posters/top10_8.png",
+            // "assets/img/Posters/top10_9.png",
+            // "assets/img/Posters/top10_10.png"
+        };
+    }
+
+    private String[] getBestTvShowsImagePaths() {
+        return new String[]{
+            "assets/img/Posters/top10_1.png",
+            "assets/img/Posters/top10_2.png",
+            "assets/img/Posters/top10_3.png",
+            "assets/img/Posters/top10_4.png",
+            "assets/img/Posters/top10_5.png",
+            "assets/img/Posters/top10_6.png",
+            // "assets/img/Posters/top10_7.png",
+            // "assets/img/Posters/top10_8.png",
+            // "assets/img/Posters/top10_9.png",
+            // "assets/img/Posters/top10_10.png"
+        };
     }
 
     public static void main(String[] args) {
