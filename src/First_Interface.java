@@ -92,11 +92,6 @@ public class First_Interface extends JFrame {
         };
         loginPanel.setLayout(null); // Use absolute positioning
 
-        // Add components to the login panel
-        // JLabel userIcon = new JLabel(new ImageIcon("assets/img/krish.png"));
-        // userIcon.setBounds(475, 100, 100, 100); // Example positioning, adjust as needed
-        // loginPanel.add(userIcon);
-
         JLabel loginLabel = new JLabel("Welcome to the Login Panel!");
         loginLabel.setFont(new Font("Serif", Font.BOLD, 22));
         loginLabel.setForeground(Color.BLACK);
@@ -111,18 +106,14 @@ public class First_Interface extends JFrame {
         passwordField.setBounds(400, 300, 300, 30); // Example positioning, adjust as needed
         loginPanel.add(passwordField);
 
-        JButton loginButton = new JButton(new ImageIcon("img/buttons/login.png"));
+        JButton loginButton = new JButton(new ImageIcon("assets/img/btn/login.png"));
         loginButton.setBounds(500, 350, 100, 50);
         loginButton.addActionListener(e -> {
             String username = usernameField.getText();
             String password = new String(passwordField.getPassword());
             boolean authenticated = UserAuthenticator.authenticate(username, password);
-            if (authenticated) {
-                // Pass this instance (the frame) to the DashboardPanel
-                // DashboardPanel dashboardPanel = new DashboardPanel(mainFrame);
-                // setContentPane(dashboardPanel);
-                // revalidate();
-                // repaint();  
+            if (authenticated) { 
+                this.dispose();
                 NetflixDashboard netflixDashboard = new NetflixDashboard();
                 netflixDashboard.setVisible(true);
                 System.out.println("Authentication Succesfull");

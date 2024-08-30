@@ -1,9 +1,9 @@
 package src;
 
-import java.sql.*;
 import javax.swing.*;
 import java.awt.*;
-import java.util.Scanner;
+import java.util.List;
+import java.util.ArrayList;
 
 public class NetflixDashboard extends JFrame {
 
@@ -44,8 +44,16 @@ public class NetflixDashboard extends JFrame {
         navBar.add(Box.createRigidArea(new Dimension(20, 0))); // Spacer
         navBar.add(logoLabel);
 
+        JLabel home = new JLabel("Home");
+        home.setFont(new Font("Serif", Font.PLAIN, 18));
+        home.setForeground(Color.RED);
+        home.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        home.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 20));
+        navBar.add(Box.createHorizontalGlue()); // Push items to the right
+        navBar.add(home);
+
         // Add navigation links
-        String[] navItems = {"Home", "TV Shows", "Movies", "New & Popular", "My List"};
+        String[] navItems = {"TV Shows", "Movies", "My List"};
         for (String item : navItems) {
             JLabel navItem = new JLabel(item);
             navItem.setFont(new Font("Serif", Font.PLAIN, 18));
@@ -66,7 +74,6 @@ public class NetflixDashboard extends JFrame {
     
         // Example movie details (title, image path, description)
         String[] imagePaths = {
-            "assets/img/Posters/unnamed.jpg", // Replace with actual paths to your images
             "assets/img/Posters/12_2_929c555a-bd2c-4d1f-b1c8-9d0cf2e88615.png",
             "assets/img/Posters/29_2_362c9118-1045-4fcb-b4ad-d8d83831da70.png",
             "assets/img/Posters/34_2_2fc257d7-11e8-4ffe-87a1-bade8b297d88.png",
@@ -98,200 +105,99 @@ public class NetflixDashboard extends JFrame {
             "assets/img/Posters/unnamed.png",
             "assets/img/Posters/Zindagi_Na_Milegi_Dobara_Minimal-NGPS2076.png",
             "assets/img/Posters/81jxal5C+uL._AC_UF1000,1000_QL80_.jpg",
-
-
             "assets/img/Posters/c104f1bfed20481f35bc96cb9addc940_240x360_crop_center.progressive.png",
             "assets/img/Posters/movie-poster-design-template_841014-16988.png"
-            // Add paths for the rest of the movies
         };
-    
-        String[] descriptions =new String[35];
 
-        for (int i = 1 ;i < 35;i++){
-            descriptions[i]="This is the description for Movie "+i+".";
-
-        }
-            // Add descriptions for the rest of the movies
-    
-        for (int i = 1; i < 35; i++) {
+        // Add placeholder panels for each movie
+        for (int i = 1; i <= imagePaths.length; i++) {
             String title = "Movie " + i;
-            String imagePath = (i <= imagePaths.length) ? imagePaths[i - 1] : imagePaths[i];
-            String description = (i <= descriptions.length) ? descriptions[i - 1] : "No description available.";
-            JPanel moviePanel = createMoviePanel(title, imagePath, description);
-            contentGrid.add(moviePanel);
+            String description = "This is the description for Movie " + i + ".";
+            JPanel placeholderPanel = createPlaceholderPanel();
+            contentGrid.add(placeholderPanel);
+            
+            // Load movie panels asynchronously
+            new MoviePanelLoader(placeholderPanel, title, imagePaths[i - 1], description).execute();
         }
-    
+
         return contentGrid;
     }
-    
-    
+
+    private JPanel createPlaceholderPanel() {
+        JPanel placeholderPanel = new JPanel();
+        placeholderPanel.setPreferredSize(new Dimension(200, 300));
+        placeholderPanel.setBackground(Color.DARK_GRAY);
+        return placeholderPanel;
+    }
+
+    // SwingWorker to load movie panels asynchronously
+    private class MoviePanelLoader extends SwingWorker<JPanel, Void> {
+        private JPanel placeholderPanel;
+        private String title;
+        private String imagePath;
+        private String description;
+
+        public MoviePanelLoader(JPanel placeholderPanel, String title, String imagePath, String description) {
+            this.placeholderPanel = placeholderPanel;
+            this.title = title;
+            this.imagePath = imagePath;
+            this.description = description;
+        }
+
+        @Override
+        protected JPanel doInBackground() {
+            return createMoviePanel(title, imagePath, description);
+        }
+
+        @Override
+        protected void done() {
+            try {
+                JPanel moviePanel = get();
+                placeholderPanel.removeAll();
+                placeholderPanel.setLayout(new BorderLayout());
+                placeholderPanel.add(moviePanel);
+                placeholderPanel.revalidate();
+                placeholderPanel.repaint();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
     private JPanel createMoviePanel(String title, String imagePath, String description) {
         JPanel moviePanel = new JPanel(new BorderLayout());
         moviePanel.setBackground(Color.BLACK);
         moviePanel.setBorder(BorderFactory.createLineBorder(Color.WHITE, 2));
-    
+
         // Load the image
         ImageIcon imageIcon = new ImageIcon(imagePath);
         Image image = imageIcon.getImage();
         Image scaledImage = image.getScaledInstance(200, 300, Image.SCALE_SMOOTH);
         imageIcon = new ImageIcon(scaledImage);
-    
+
         // Create a label with the image icon
         JLabel thumbnail = new JLabel(imageIcon);
         thumbnail.setPreferredSize(new Dimension(200, 300)); // Adjust size as needed
         moviePanel.add(thumbnail, BorderLayout.CENTER);
-    
+
         // Add the movie title below the thumbnail
         JLabel titleLabel = new JLabel(title, SwingConstants.CENTER);
         titleLabel.setFont(new Font("Serif", Font.PLAIN, 14));
         titleLabel.setForeground(Color.WHITE);
         moviePanel.add(titleLabel, BorderLayout.SOUTH);
-    
+
         // Add a mouse listener to the thumbnail
         thumbnail.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         thumbnail.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                new MovieDetailFrame(title, imagePath, description);
+                new MovieDetailFrame(title, imagePath, description); // Create new MovieDetailFrame here with the movie detailsnew MovieDetailFrame(title, imagePath, description);
             }
         });
-    
+
         return moviePanel;
-    }
-}
-    
-class Verification{
-    static Scanner sc = new Scanner(System.in);
-    static boolean n_c;
-    public static String number_check(Connection con,String number) throws Existed_info{
-        boolean b = true;
-        n_c = false;
-        boolean is_num = false;
-        for(int i = 0 ; i < number.length() ; i++){
-            if(number.charAt(i) >= 48 || number.charAt(i) <= 57){
-                is_num = true;
-            }
-            else{
-                is_num = false;
-                break;
-            }
-        }
-        while (b){
-            if(number.length() != 10 && !is_num){
-                System.out.print("Please enter a valid number : ");
-                number = sc.next();
-                b=true;
-            }
-            else{
-                String sql = "Select customer_id from customer";
-                try {
-                    PreparedStatement pst = con.prepareStatement(sql);
-                    ResultSet rs = pst.executeQuery();
-                    while(rs.next()){
-                        String num_check = rs.getString(1);
-                        if(num_check.equals(number)){
-                            n_c = true;
-                            break;
-                        }
-                    }
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                } 
-                if(n_c){
-                    b=false;
-                    throw new Existed_info("Number Already Exist");  
-                }
-                else{
-                    b=false;
-                }
-            }
-        }
-        return number;
-    }
-    public static String mail_check(Connection con,String mail) throws Existed_info{
-        mail = mail.toLowerCase();
-        boolean m_c = false;
-        String sql = "Select customer_email from customer";
-        try {
-            PreparedStatement pst = con.prepareStatement(sql);
-            ResultSet rs = pst.executeQuery();
-            while(rs.next()){
-                String mail_check = rs.getString(1);
-                    if(mail_check == mail){
-                        m_c = true;
-                    }
-                }
-        } catch (SQLException e) {
-                e.printStackTrace();
-        }
-        if(m_c){
-            throw new Existed_info("E-mail Id Already Exist");
-        }
-        else{
-            System.out.println("E-mail Id Inserted Sucessfully");
-            return mail;
-        }
     }
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(NetflixDashboard::new);
     }
-
-    public static String pass_check(Connection con,String pass){
-        boolean c = true;
-        int count_caps = 0;
-        int count_low = 0;
-        int count_num = 0;
-        boolean sym = true ;
-        for(int i = 0; i<pass.length();i++){
-            char x = pass.charAt(i);
-            if(x >= 65 && x <= 90){
-                count_caps = count_caps + 1  ;
-            }
-            else if( x >= 97 && x <= 122 ){
-                count_low = count_low + 1;
-            }
-            else if( x >= 48 && x <= 57){
-                count_num = count_num + 1;
-            }
-            else if (!(x >= 65 && x <= 90) && !(x >= 97 && x <= 122) && !(x >= 48 && x <= 57)){
-                sym = false;
-            }
-        }
-        while(c){
-            if (pass.length() < 8) {
-                System.out.println("Password Length is Not Valid ");
-                System.out.print("Please Enter Password Again : ");
-                pass = sc.next();
-                pass_check(con,pass);
-            } else {
-                if(count_caps>=1 && count_low >= 1 && count_num >=1){
-                    if(sym){
-                        System.out.println("Password is valid ");
-                        c = false;
-                    }
-                    else{
-                        System.out.println("Don't insert Symbols in Password ");
-                        System.out.print("Please Enter Password Again : ");
-                        pass = sc.next();
-                        pass_check(con,pass);
-                    }
-                }
-                else{
-                    System.out.println("Password is invalid , Please follow the terms & Conditions ");// we can write what is invalid 
-                    System.out.print("Please Enter Password Again : ");
-                    pass = sc.next();
-                    pass_check(con,pass);
-                }
-            }
-        }
-        return pass;
-    }
 }
-
-class Existed_info extends Exception{
-    Existed_info(String s){
-        super(s);
-    }
-}
-
