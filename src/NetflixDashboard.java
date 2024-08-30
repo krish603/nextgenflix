@@ -157,11 +157,8 @@ public class NetflixDashboard extends JFrame {
             count++;
             String title = "Movie "+count;
             String description = "This is the description for " + title + ".";
-            JPanel moviePanel = createMoviePanel(title, imagePath, description);
-            JPanel placeholderPanel = createPlaceholderPanel();
-            contentRow.add(moviePanel,placeholderPanel);
-
-            new MoviePanelLoader(placeholderPanel, title, imagePath, description);
+            JPanel moviePanel = createMoviePanel("M",title, imagePath, description);
+            contentRow.add(moviePanel);
         }
 
         return contentRow;
@@ -177,11 +174,8 @@ public class NetflixDashboard extends JFrame {
             count++;
             String title = "TV Show "+count;
             String description = "This is the description for " + title + ".";
-            JPanel moviePanel = createMoviePanel(title, imagePath, description);
-            JPanel placeholderPanel = createPlaceholderPanel();
-            contentRow.add(moviePanel,placeholderPanel);
-
-            new MoviePanelLoader(placeholderPanel, title, imagePath, description);
+            JPanel moviePanel = createMoviePanel("",title, imagePath, description);
+            contentRow.add(moviePanel);
         }
 
         return contentRow;
@@ -197,11 +191,8 @@ public class NetflixDashboard extends JFrame {
             count++;
             String title = "Movie "+count;
             String description = "This is the description for " + title + ".";
-            JPanel moviePanel = createMoviePanel(title, imagePath, description);
-            JPanel placeholderPanel = createPlaceholderPanel();
-            contentRow.add(moviePanel,placeholderPanel);
-
-            new MoviePanelLoader(placeholderPanel, title, imagePath, description);
+            JPanel moviePanel = createMoviePanel("M",title, imagePath, description);
+            contentRow.add(moviePanel);
         }
 
         return contentRow;
@@ -217,59 +208,56 @@ public class NetflixDashboard extends JFrame {
             count++;
             String title = "TV Show "+count;
             String description = "This is the description for " + title + ".";
-            JPanel moviePanel = createMoviePanel(title, imagePath, description);
-            JPanel placeholderPanel = createPlaceholderPanel();
-            contentRow.add(moviePanel,placeholderPanel);
-
-            new MoviePanelLoader(placeholderPanel, title, imagePath, description);
+            JPanel moviePanel = createMoviePanel("",title, imagePath, description);
+            contentRow.add(moviePanel);
         }
 
         return contentRow;
     }
 
-    public JPanel createPlaceholderPanel() {
-        JPanel placeholderPanel = new JPanel();
-        placeholderPanel.setPreferredSize(new Dimension(200, 300));
-        placeholderPanel.setBackground(Color.DARK_GRAY);
-        return placeholderPanel;
-    }
+    // public JPanel createPlaceholderPanel() {
+    //     JPanel placeholderPanel = new JPanel();
+    //     placeholderPanel.setPreferredSize(new Dimension(200, 300));
+    //     placeholderPanel.setBackground(Color.DARK_GRAY);
+    //     return placeholderPanel;
+    // }
 
     // SwingWorker to load movie panels asynchronously
-    public class MoviePanelLoader extends SwingWorker<JPanel, Void> {
-        private JPanel placeholderPanel;
-        private String title;
-        private String imagePath;
-        private String description;
+    // public class MoviePanelLoader extends SwingWorker<JPanel, Void> {
+    //     private JPanel placeholderPanel;
+    //     private String title;
+    //     private String imagePath;
+    //     private String description;
 
-        public MoviePanelLoader(JPanel placeholderPanel, String title, String imagePath, String description) {
-            this.placeholderPanel = placeholderPanel;
-            this.title = title;
-            this.imagePath = imagePath;
-            this.description = description;
-        }
+    //     public MoviePanelLoader(JPanel placeholderPanel, String title, String imagePath, String description) {
+    //         this.placeholderPanel = placeholderPanel;
+    //         this.title = title;
+    //         this.imagePath = imagePath;
+    //         this.description = description;
+    //     }
 
-        @Override
-        protected JPanel doInBackground() {
-            return createMoviePanel(title, imagePath, description);
-        }
+    //     @Override
+    //     protected JPanel doInBackground() {
+    //         return createMoviePanel(title, imagePath, description);
+    //     }
 
-        @Override
-        protected void done() {
-            try {
-                JPanel moviePanel = get();
-                placeholderPanel.removeAll();
-                placeholderPanel.setLayout(new BorderLayout());
-                placeholderPanel.add(moviePanel);
-                placeholderPanel.revalidate();
-                placeholderPanel.repaint();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    }
+    //     @Override
+    //     protected void done() {
+    //         try {
+    //             JPanel moviePanel = get();
+    //             placeholderPanel.removeAll();
+    //             placeholderPanel.setLayout(new BorderLayout());
+    //             placeholderPanel.add(moviePanel);
+    //             placeholderPanel.revalidate();
+    //             placeholderPanel.repaint();
+    //         } catch (Exception e) {
+    //             e.printStackTrace();
+    //         }
+    //     }
+    // }
 
 
-    static JPanel createMoviePanel(String title, String imagePath, String description) {
+    static JPanel createMoviePanel(String type, String title, String imagePath, String description) {
         JPanel moviePanel = new JPanel(new BorderLayout());
         moviePanel.setBackground(Color.BLACK);
         moviePanel.setBorder(BorderFactory.createLineBorder(Color.WHITE, 2));
@@ -295,7 +283,7 @@ public class NetflixDashboard extends JFrame {
         thumbnail.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         thumbnail.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                new MovieDetailFrame(title, imagePath, description); // Create new MovieDetailFrame here with the movie details
+                new MovieDetailFrame(type,title, imagePath, description); // Create new MovieDetailFrame here with the movie details
             }
         });
 

@@ -2,14 +2,24 @@ package src;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+// import java.awt.event.ActionEvent;
+// import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
 public class MovieDetailFrame extends JFrame {
 
-    public MovieDetailFrame(String title, String imagePath, String description) {
+    private String title;
+    private String type; // To distinguish between Movie and TV Show
+
+    public MovieDetailFrame(String type, String title, String imagePath, String description) {
+        this.title = title;
+        this.type = type.equals("M") ? "movies" : "tvshows"; // Set the type based on the title
+
         // Set the frame properties
         setTitle(title);
         setSize(600, 350);
@@ -76,29 +86,38 @@ public class MovieDetailFrame extends JFrame {
         watchTrailer.setBounds(220, 245, 150, 50);
         mainPanel.add(watchTrailer);
 
-        JButton playButton;
-        if (title.contains("Movie")) {
-            playButton = new JButton("Play Movie");
-        } else {
-            playButton = new JButton("Play Episode");
-        }
+        JButton playButton = new JButton(type.equals("M") ? "Play Movie" : "Play Episode");
         playButton.setBackground(Color.decode("#e50914"));
         playButton.setBounds(400, 245, 150, 50);
         mainPanel.add(playButton);
 
         // Action listeners for the buttons
-        watchTrailer.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                playVideo("assets/video/NEXTGENFLIX.mp4");
+        watchTrailer.addActionListener(e -> playVideo("assets/video/NEXTGENFLIX.mp4"));
+
+        playButton.addActionListener(e -> playVideo("assets/video/NEXTGENFLIX.mp4"));
+
+        submitRating.addActionListener(e -> {
+            String ratingText = rateText.getText();
+            if (ratingText.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Please enter something", "Error", JOptionPane.ERROR_MESSAGE);
+            } else {
+                try {
+                    float ratingValue = Float.parseFloat(ratingText);
+                    if (ratingValue >= 0 && ratingValue <= 10) {
+                        updateRatingInDatabase(ratingValue);
+                        JOptionPane.showMessageDialog(this, "Rated successfully", "Success", JOptionPane.INFORMATION_MESSAGE);
+                    } else {
+                        JOptionPane.showMessageDialog(this, "Please enter a rating between 0 and 10", "Error", JOptionPane.ERROR_MESSAGE);
+                    }
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(this, "Please enter a valid decimal number", "Error", JOptionPane.ERROR_MESSAGE);
+                }
             }
         });
 
-        playButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                playVideo("assets/video/NEXTGENFLIX.mp4");
-            }
+        addToList.addActionListener(e -> {
+            updateWatchlistStatusInDatabase(true);
+            JOptionPane.showMessageDialog(this, "Added successfully", "Success", JOptionPane.INFORMATION_MESSAGE);
         });
 
         // Make the frame visible
@@ -116,6 +135,30 @@ public class MovieDetailFrame extends JFrame {
         } catch (IOException ex) {
             ex.printStackTrace();
             JOptionPane.showMessageDialog(this, "Unable to play video.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void updateRatingInDatabase(float ratingValue) {
+        String query = "UPDATE " + type + " SET rating = ? WHERE title = ?";
+        try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/nextgenflix", "root", "");
+             PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setFloat(1, ratingValue);
+            statement.setString(2, title);
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void updateWatchlistStatusInDatabase(boolean isInWatchlist) {
+        String query = "UPDATE " + type + " SET is_in_watchlist = ? WHERE title = ?";
+        try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/nextgenflix", "root", "");
+             PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setBoolean(1, isInWatchlist);
+            statement.setString(2, title);
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 }

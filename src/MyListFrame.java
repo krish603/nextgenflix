@@ -144,7 +144,7 @@ public class MyListFrame extends JFrame{
             count++;
             String title = "Movie "+count;
             String description = "This is the description for " + title + ".";
-            JPanel moviePanel = NetflixDashboard.createMoviePanel(title, imagePath, description);
+            JPanel moviePanel = NetflixDashboard.createMoviePanel("M", title, imagePath, description);
             contentRow.add(moviePanel);
         }
 
@@ -161,7 +161,7 @@ public class MyListFrame extends JFrame{
             count++;
             String title = "TV Show "+count;
             String description = "This is the description for " + title + ".";
-            JPanel moviePanel = NetflixDashboard.createMoviePanel(title, imagePath, description);
+            JPanel moviePanel = NetflixDashboard.createMoviePanel("", title, imagePath, description);
             contentRow.add(moviePanel);
         }
 

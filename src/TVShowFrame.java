@@ -1,6 +1,10 @@
 package src;
 
 import java.awt.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
 
 import javax.swing.*;
 
@@ -104,43 +108,30 @@ public class TVShowFrame extends JFrame{
     }
 
     private JPanel createContentGrid() {
-        JPanel contentGrid = new JPanel(new GridLayout(3, 5, 10, 10)); // 3 rows, 5 columns, 10px gaps
+        JPanel contentGrid = new JPanel(new GridLayout(4, 5, 10, 10));
         contentGrid.setBackground(Color.DARK_GRAY);
         contentGrid.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        // Example movie details (title, image path, description)
-        String[] imagePaths = {
-            "add movies here",
-            "add movies here",
-            "add movies here",
-            "add movies here",
-            "add movies here",
-            "add movies here",
-            "add movies here",
-            "add movies here",
-            "add movies here",
-            "add movies here",
-            "add movies here",
-            "add movies here",
-            "add movies here",
-            "add movies here",
-            "add movies here",
-        };
+        try {
+            // Connect to the database
+            Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/nextgenflix", "root", "");
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery("SELECT title, description, image_path FROM tvshows");
 
-        String[] descriptions =new String[35];
+            while (rs.next()) {
+                String title = rs.getString("title");
+                String imagePath = rs.getString("image_path");
+                String description = rs.getString("description");
 
-        for (int i = 1 ;i < 35;i++){
-            descriptions[i]="This is the description for TV Show "+i+".";
+                JPanel moviePanel = NetflixDashboard.createMoviePanel("", title, imagePath, description);
+                contentGrid.add(moviePanel);
+            }
 
-        }
-
-        int count = 0;
-        for (String imagePath : imagePaths) {
-            count++;
-            String title = "TV Show "+count;
-            String description = "This is the description for " + title + ".";
-            JPanel moviePanel = NetflixDashboard.createMoviePanel(title, imagePath, description);
-            contentGrid.add(moviePanel);
+            rs.close();
+            stmt.close();
+            conn.close();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
         return contentGrid;
