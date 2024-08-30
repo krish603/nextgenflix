@@ -20,12 +20,10 @@ public class MovieFrame extends JFrame{
         JPanel navBar = createNavBar();
         mainPanel.add(navBar, BorderLayout.NORTH);
 
-        // Create the content panel with movies, TV shows, and Top 10 sections
-        JPanel contentPanel = new JPanel();
-        contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
-
-        // Add the content panel to the main panel
-        JScrollPane scrollPane = new JScrollPane(contentPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        // Create the grid of movie thumbnails
+        JPanel contentGrid = createContentGrid();
+        JScrollPane scrollPane = new JScrollPane(contentGrid);
+        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER); // Disable horizontal scrolling
         mainPanel.add(scrollPane, BorderLayout.CENTER);
     }
 
@@ -103,5 +101,69 @@ public class MovieFrame extends JFrame{
         this.setVisible(false);
         TVShowFrame tvshow = new TVShowFrame();
         tvshow.setVisible(true);
+    }
+
+    private JPanel createContentGrid() {
+        JPanel contentGrid = new JPanel(new GridLayout(7, 5, 10, 10)); // 3 rows, 5 columns, 10px gaps
+        contentGrid.setBackground(Color.DARK_GRAY);
+        contentGrid.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+
+        // Example movie details (title, image path, description)
+        String[] imagePaths = {
+            "assets/img/Posters/12_2_929c555a-bd2c-4d1f-b1c8-9d0cf2e88615.png",
+            "assets/img/Posters/29_2_362c9118-1045-4fcb-b4ad-d8d83831da70.png",
+            "assets/img/Posters/34_2_2fc257d7-11e8-4ffe-87a1-bade8b297d88.png",
+            "assets/img/Posters/Oppenheimer.png",
+            "assets/img/Posters/61jBc4kTVSL._AC_UF1000,1000_QL80_.png",
+            "assets/img/Posters/71FbCxxC4zL._AC_UF894,1000_QL80_.png",
+            "assets/img/Posters/action-movie-poster-template-design-0f5fff6262fdefb855e3a9a3f0fdd361_screen.png",
+            "assets/img/Posters/adventure-movie-poster-template-design-7b13ea2ab6f64c1ec9e1bb473f345547_screen.png",
+            "assets/img/Posters/custom-made-hollywood-movie-posters-2.png",
+            "assets/img/Posters/e5751316c3b567b2e17c914c5c51c85d.png",
+            "assets/img/Posters/il_570xN.2835655237_4h8m.png",
+            "assets/img/Posters/l_434409_bab40b66.png",
+            "assets/img/Posters/lady-vengeance-b.png",
+            "assets/img/Posters/MOVCJ3054__57379.png",
+            "assets/img/Posters/movie-poster-template-design-21a1c803fe4ff4b858de24f5c91ec57f_screen.png",
+            "assets/img/Posters/PG2_Copy_4bef8a47-f239-44aa-97ba-aa0da4b4de38.png",
+            "assets/img/Posters/PG17_2_Copy.png",
+            "assets/img/Posters/PG100_Copy_3c7a4544-1585-46b3-820d-b6d036653aed.png",
+            "assets/img/Posters/PG107_Copy_cef8be77-761a-4d03-9dfc-91f3a78d5635.png",
+            "assets/img/Posters/PG159_3_75fc1279-996b-4f8d-a1b7-3dfa0e32277a.png",
+            "assets/img/Posters/pg1013.png",
+            "assets/img/Posters/pg1599.png",
+            "assets/img/Posters/pg1678.png",
+            "assets/img/Posters/PGMG080_Copy.png",
+            "assets/img/Posters/s-l1200 (1).png",
+            "assets/img/Posters/s-l1200.png",
+            "assets/img/Posters/Shawshank_Redemption_-_Hope_Is_Good_Thing_Copy.png",
+            "assets/img/Posters/small-hollywood-movie-poster-blade-runner-2049-ridley-scott-original-imaf3qvx88xenydd.png",
+            "assets/img/Posters/unnamed.png",
+            "assets/img/Posters/Zindagi_Na_Milegi_Dobara_Minimal-NGPS2076.png",
+            "assets/img/Posters/81jxal5C+uL._AC_UF1000,1000_QL80_.jpg",
+
+
+            "assets/img/Posters/c104f1bfed20481f35bc96cb9addc940_240x360_crop_center.progressive.png",
+            "assets/img/Posters/movie-poster-design-template_841014-16988.png"
+            // Add paths for the rest of the movies
+        };
+
+        String[] descriptions =new String[35];
+
+        for (int i = 1 ;i < 35;i++){
+            descriptions[i]="This is the description for Movie "+i+".";
+
+        }
+
+        int count = 0;
+        for (String imagePath : imagePaths) {
+            count++;
+            String title = "Movie "+count;
+            String description = "This is the description for " + title + ".";
+            JPanel moviePanel = NetflixDashboard.createMoviePanel(title, imagePath, description);
+            contentGrid.add(moviePanel);
+        }
+
+        return contentGrid;
     }
 }

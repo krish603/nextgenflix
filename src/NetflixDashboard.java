@@ -211,7 +211,7 @@ public class NetflixDashboard extends JFrame {
         return contentRow;
     }
 
-    private JPanel createMoviePanel(String title, String imagePath, String description) {
+    static JPanel createMoviePanel(String title, String imagePath, String description) {
         JPanel moviePanel = new JPanel(new BorderLayout());
         moviePanel.setBackground(Color.BLACK);
         moviePanel.setBorder(BorderFactory.createLineBorder(Color.WHITE, 2));
