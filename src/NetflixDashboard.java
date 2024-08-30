@@ -7,8 +7,7 @@ public class NetflixDashboard extends JFrame {
     private JPanel contentRow;
 
     public NetflixDashboard() {
-        // Set the frame properties
-        setTitle("Netflix Dashboard");
+        setTitle("Nextgenflix");
         setSize(1280, 720);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
@@ -25,16 +24,12 @@ public class NetflixDashboard extends JFrame {
         JPanel contentPanel = new JPanel();
         contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
 
-        // Movies slider
         contentPanel.add(createSectionWithTitleAndSlider("Movies", getMovieImagePaths()));
 
-        // TV Shows slider
         contentPanel.add(createSectionWithTitleAndSlider("TV Shows", getTVShowImagePaths()));
 
-        // Best Movies Slider
         contentPanel.add(createSectionWithTitleAndSlider("Best Movies", getBestMoviesImagePaths()));
 
-        // Best Tv Shows slider
         contentPanel.add(createSectionWithTitleAndSlider("Best TV Shows", getBestTvShowsImagePaths()));
 
         // Add the content panel to the main panel
@@ -45,18 +40,18 @@ public class NetflixDashboard extends JFrame {
         setVisible(true);
     }
 
-    private JPanel createNavBar() {
+    public JPanel createNavBar() {
         JPanel navBar = new JPanel();
         navBar.setBackground(Color.BLACK);
         navBar.setLayout(new BoxLayout(navBar, BoxLayout.X_AXIS));
-
+    
         // Add Netflix logo (as text here, but you can use an ImageIcon)
         JLabel logoLabel = new JLabel("Nextgenflix");
         logoLabel.setFont(new Font("Serif", Font.BOLD, 24));
         logoLabel.setForeground(Color.RED);
         navBar.add(Box.createRigidArea(new Dimension(20, 0))); // Spacer
         navBar.add(logoLabel);
-
+    
         JLabel home = new JLabel("Home");
         home.setFont(new Font("Serif", Font.PLAIN, 18));
         home.setForeground(Color.RED);
@@ -64,57 +59,58 @@ public class NetflixDashboard extends JFrame {
         home.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 20));
         navBar.add(Box.createHorizontalGlue()); // Push items to the right
         navBar.add(home);
-
-        JButton Movies = new JButton("Movies");
-        Movies.setFont(new Font("Serif", Font.PLAIN, 18));
-        Movies.setForeground(Color.WHITE);
-        Movies.setBackground(Color.BLACK);
-        Movies.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 20));
-        Movies.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        Movies.addActionListener(e -> showMovieFrame());
-        Movies.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 20));
+    
+        // Create Movies button
+        JButton moviesButton = new JButton("Movies");
+        moviesButton.setFont(new Font("Serif", Font.PLAIN, 18));
+        moviesButton.setForeground(Color.WHITE);
+        moviesButton.setBackground(Color.BLACK);
+        moviesButton.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 20));
+        moviesButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        moviesButton.addActionListener(e -> showMovieFrame()); // Correctly add ActionListener here
         navBar.add(Box.createHorizontalGlue()); // Push items to the right
-        navBar.add(Movies);
-
-        JButton TVShow = new JButton("TV Shows");
-        TVShow.setFont(new Font("Serif", Font.PLAIN, 18));
-        TVShow.setForeground(Color.WHITE);
-        TVShow.setBackground(Color.BLACK);
-        TVShow.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 20));
-        TVShow.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        Movies.addActionListener(e -> showTVShowsFrame());
-        TVShow.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 20));
+        navBar.add(moviesButton);
+    
+        // Create TV Shows button
+        JButton tvShowsButton = new JButton("TV Shows");
+        tvShowsButton.setFont(new Font("Serif", Font.PLAIN, 18));
+        tvShowsButton.setForeground(Color.WHITE);
+        tvShowsButton.setBackground(Color.BLACK);
+        tvShowsButton.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 20));
+        tvShowsButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        tvShowsButton.addActionListener(e -> showTVShowsFrame()); // Correctly add ActionListener here
         navBar.add(Box.createHorizontalGlue()); // Push items to the right
-        navBar.add(TVShow);
-
-        JButton MyList = new JButton("My List");
-        MyList.setFont(new Font("Serif", Font.PLAIN, 18));
-        MyList.setForeground(Color.WHITE);
-        MyList.setBackground(Color.BLACK);
-        MyList.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 20));
-        MyList.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        Movies.addActionListener(e -> showListFrame());
-        MyList.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 20));
+        navBar.add(tvShowsButton);
+    
+        // Create My List button
+        JButton myListButton = new JButton("My List");
+        myListButton.setFont(new Font("Serif", Font.PLAIN, 18));
+        myListButton.setForeground(Color.WHITE);
+        myListButton.setBackground(Color.BLACK);
+        myListButton.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 20));
+        myListButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        myListButton.addActionListener(e -> showListFrame()); // Correctly add ActionListener here
         navBar.add(Box.createHorizontalGlue()); // Push items to the right
-        navBar.add(MyList);
-
+        navBar.add(myListButton);
+    
         return navBar;
     }
+    
 
     private void showListFrame() {
-        this.dispose();
+        this.setVisible(false);
         MyListFrame list = new MyListFrame();
         list.setVisible(true);
     }
 
     private void showTVShowsFrame() {
-        this.dispose();
+        this.setVisible(false);
         TVShowFrame tvshow = new TVShowFrame();
         tvshow.setVisible(true);
     }
 
     private void showMovieFrame() {
-        this.dispose();
+        this.setVisible(false);
         MovieFrame movie = new MovieFrame();
         movie.setVisible(true);
     }
