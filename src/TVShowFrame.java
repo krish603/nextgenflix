@@ -20,12 +20,10 @@ public class TVShowFrame extends JFrame{
         JPanel navBar = createNavBar();
         mainPanel.add(navBar, BorderLayout.NORTH);
 
-        // Create the content panel with movies, TV shows, and Top 10 sections
-        JPanel contentPanel = new JPanel();
-        contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
-
-        // Add the content panel to the main panel
-        JScrollPane scrollPane = new JScrollPane(contentPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        // Create the grid of TV show thumbnails
+        JPanel contentGrid = createContentGrid();
+        JScrollPane scrollPane = new JScrollPane(contentGrid);
+        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER); // Disable horizontal scrolling
         mainPanel.add(scrollPane, BorderLayout.CENTER);
     }
 
@@ -103,6 +101,49 @@ public class TVShowFrame extends JFrame{
         this.setVisible(false);
         MovieFrame movie = new MovieFrame();
         movie.setVisible(true);
+    }
+
+    private JPanel createContentGrid() {
+        JPanel contentGrid = new JPanel(new GridLayout(3, 5, 10, 10)); // 3 rows, 5 columns, 10px gaps
+        contentGrid.setBackground(Color.DARK_GRAY);
+        contentGrid.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+
+        // Example movie details (title, image path, description)
+        String[] imagePaths = {
+            "add movies here",
+            "add movies here",
+            "add movies here",
+            "add movies here",
+            "add movies here",
+            "add movies here",
+            "add movies here",
+            "add movies here",
+            "add movies here",
+            "add movies here",
+            "add movies here",
+            "add movies here",
+            "add movies here",
+            "add movies here",
+            "add movies here",
+        };
+
+        String[] descriptions =new String[35];
+
+        for (int i = 1 ;i < 35;i++){
+            descriptions[i]="This is the description for TV Show "+i+".";
+
+        }
+
+        int count = 0;
+        for (String imagePath : imagePaths) {
+            count++;
+            String title = "TV Show "+count;
+            String description = "This is the description for " + title + ".";
+            JPanel moviePanel = NetflixDashboard.createMoviePanel(title, imagePath, description);
+            contentGrid.add(moviePanel);
+        }
+
+        return contentGrid;
     }
 
 }
