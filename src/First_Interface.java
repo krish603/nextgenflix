@@ -92,7 +92,7 @@ public class First_Interface extends JFrame {
         };
         loginPanel.setLayout(null); // Use absolute positioning
 
-        JLabel loginLabel = new JLabel("Welcome to the Login Panel!");
+        JLabel loginLabel = new JLabel("Welcome to the Nextgenflix!");
         loginLabel.setFont(new Font("Serif", Font.BOLD, 22));
         loginLabel.setForeground(Color.BLACK);
         loginLabel.setBounds(420, 206, 500, 30); // Position above the loading line
