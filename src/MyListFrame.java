@@ -19,7 +19,7 @@ public class MyListFrame extends JFrame{
 
         // Create the top navigation bar
         JPanel navBar = createNavBar();
-        mainPanel.add(navBar, BorderLayout.NORTH);
+        mainPanel.add(navBar,BorderLayout.NORTH);
 
         // Create the content panel with movies, TV shows, and Top 10 sections
         JPanel contentPanel = new JPanel();

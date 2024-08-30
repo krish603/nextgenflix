@@ -33,7 +33,7 @@ public class NetflixDashboard extends JFrame {
         contentPanel.add(createSectionWithTitleAndSlider("Best TV Shows", getBestTvShowsImagePaths()));
 
         // Add the content panel to the main panel
-        JScrollPane scrollPane = new JScrollPane(contentPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        JScrollPane scrollPane = new JScrollPane(contentPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         mainPanel.add(scrollPane, BorderLayout.CENTER);
 
         // Make the frame visible
