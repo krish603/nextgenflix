@@ -8,12 +8,14 @@ public class MovieDetailFrame extends JFrame {
     public MovieDetailFrame(String title, String imagePath, String description) {
         // Set the frame properties
         setTitle(title);
-        setSize(600, 400);
+        setSize(600, 350);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
 
-        // Create the main panel with BorderLayout
-        JPanel mainPanel = new JPanel(new BorderLayout());
+        // Set the layout to null for absolute positioning
+        JPanel mainPanel = new JPanel();
+        mainPanel.setLayout(null);
+        mainPanel.setBackground(Color.BLACK);
         setContentPane(mainPanel);
 
         // Add movie poster
@@ -23,25 +25,55 @@ public class MovieDetailFrame extends JFrame {
         imageIcon = new ImageIcon(scaledImage);
 
         JLabel thumbnail = new JLabel(imageIcon);
-        mainPanel.add(thumbnail, BorderLayout.WEST);
+        thumbnail.setBounds(10, 10, 200, 300);  
+        mainPanel.add(thumbnail);
 
         // Add movie details
-        JPanel detailsPanel = new JPanel();
-        detailsPanel.setLayout(new BoxLayout(detailsPanel, BoxLayout.Y_AXIS));
-
         JLabel titleLabel = new JLabel(title);
         titleLabel.setFont(new Font("Serif", Font.BOLD, 24));
-        detailsPanel.add(titleLabel);
+        titleLabel.setForeground(Color.WHITE);
+        titleLabel.setBounds(220, 10, 350, 30);  
+        mainPanel.add(titleLabel);
 
-        JTextArea descriptionArea = new JTextArea(description);
+        JLabel descriptionArea = new JLabel(description);
         descriptionArea.setFont(new Font("Serif", Font.PLAIN, 16));
-        descriptionArea.setLineWrap(true);
-        descriptionArea.setWrapStyleWord(true);
-        descriptionArea.setOpaque(false);
-        descriptionArea.setEditable(false);
-        detailsPanel.add(descriptionArea);
+        descriptionArea.setForeground(Color.WHITE);
+        descriptionArea.setBounds(220, 50, 350, 100); 
+        mainPanel.add(descriptionArea);
 
-        mainPanel.add(detailsPanel, BorderLayout.CENTER);
+        JLabel rating = new JLabel("Rating : 9.5");
+        rating.setFont(new Font("Serif", Font.PLAIN, 16));
+        rating.setForeground(Color.WHITE);
+        rating.setBounds(220, 160, 200, 30);  
+        mainPanel.add(rating);
+
+        JLabel rate = new JLabel("Rate (Out of 10) : ");
+        rate.setFont(new Font("Serif", Font.PLAIN, 16));
+        rate.setForeground(Color.WHITE);
+        rate.setBounds(220, 200, 150, 30);  
+        mainPanel.add(rate);
+
+        JTextField rateText = new JTextField();
+        rateText.setBounds(340, 205, 50, 25);  
+        mainPanel.add(rateText);
+
+        JButton submitRating = new JButton("Submit");
+        submitRating.setBounds(410, 205, 100, 25);
+        mainPanel.add(submitRating); 
+
+        JButton watchTrailer = new JButton("Watch Trailer");
+        watchTrailer.setBounds(220, 245, 150, 50);
+        mainPanel.add(watchTrailer);
+
+        if (title.contains("Movie")) {
+            JButton playButton = new JButton("Play Movie");
+            playButton.setBounds(400, 245, 150, 50);
+            mainPanel.add(playButton);   
+        } else {
+            JButton playButton = new JButton("Play Episode");
+            playButton.setBounds(400, 245, 150, 50);
+            mainPanel.add(playButton);
+        }
 
         // Make the frame visible
         setVisible(true);

@@ -5,6 +5,7 @@ import java.awt.*;
 
 public class NetflixDashboard extends JFrame {
     private JPanel contentRow;
+    public JPanel sectionPanel;
 
     public NetflixDashboard() {
         setTitle("Nextgenflix");
@@ -33,8 +34,11 @@ public class NetflixDashboard extends JFrame {
         contentPanel.add(createSectionWithTitleAndSlider("Best TV Shows", getBestTvShowsImagePaths()));
 
         // Add the content panel to the main panel
-        JScrollPane scrollPane = new JScrollPane(contentPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        mainPanel.add(scrollPane, BorderLayout.CENTER);
+        JScrollPane scrollPane1 = new JScrollPane(contentPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        mainPanel.add(scrollPane1, BorderLayout.CENTER);
+
+        JScrollPane scrollPane2 = new JScrollPane(sectionPanel , JScrollPane.VERTICAL_SCROLLBAR_NEVER, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        contentPanel.add(scrollPane2);
 
         // Make the frame visible
         setVisible(true);
@@ -116,7 +120,7 @@ public class NetflixDashboard extends JFrame {
     }
 
     private JPanel createSectionWithTitleAndSlider(String title, String[] imagePaths) {
-        JPanel sectionPanel = new JPanel();
+        sectionPanel = new JPanel();
         sectionPanel.setLayout(new BoxLayout(sectionPanel, BoxLayout.Y_AXIS));
 
         JLabel sectionTitle = new JLabel(title);
