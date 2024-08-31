@@ -1,15 +1,18 @@
 package src;
 
 import java.awt.*;
+import java.awt.event.*;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
-
 import javax.swing.*;
 
-public class TVShowFrame extends JFrame{
- 
+public class TVShowFrame extends JFrame {
+
+    private JTextField searchField;
+    private JPanel contentGrid;
+
     public TVShowFrame() {
         setTitle("Nextgenflix");
         setSize(1280, 720);
@@ -24,11 +27,28 @@ public class TVShowFrame extends JFrame{
         JPanel navBar = createNavBar();
         mainPanel.add(navBar, BorderLayout.NORTH);
 
+        // Create a top panel to hold both the search bar and the grid
+        JPanel topPanel = new JPanel(new BorderLayout());
+        mainPanel.add(topPanel, BorderLayout.CENTER);
+
+        // Create the search bar
+        searchField = new JTextField(20);
+        searchField.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyReleased(KeyEvent e) {
+                filterTVShows();
+            }
+        });
+
+        JPanel searchPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        searchPanel.add(searchField);
+        topPanel.add(searchPanel, BorderLayout.NORTH);
+
         // Create the grid of TV show thumbnails
-        JPanel contentGrid = createContentGrid();
+        contentGrid = createContentGrid();
         JScrollPane scrollPane = new JScrollPane(contentGrid);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER); // Disable horizontal scrolling
-        mainPanel.add(scrollPane, BorderLayout.CENTER);
+        topPanel.add(scrollPane, BorderLayout.CENTER);
     }
 
     public JPanel createNavBar() {
@@ -47,10 +67,8 @@ public class TVShowFrame extends JFrame{
         home.setFont(new Font("Serif", Font.PLAIN, 18));
         home.setForeground(Color.WHITE);
         home.setBackground(Color.BLACK);
-        home.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 20));
         home.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         home.addActionListener(e -> showDashBoardFrame());
-        home.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 20));
         navBar.add(Box.createHorizontalGlue()); // Push items to the right
         navBar.add(home);
 
@@ -58,10 +76,8 @@ public class TVShowFrame extends JFrame{
         Movies.setFont(new Font("Serif", Font.PLAIN, 18));
         Movies.setForeground(Color.WHITE);
         Movies.setBackground(Color.BLACK);
-        Movies.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 20));
         Movies.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         Movies.addActionListener(e -> showMovieFrame());
-        Movies.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 20));
         navBar.add(Box.createHorizontalGlue()); // Push items to the right
         navBar.add(Movies);
 
@@ -69,9 +85,7 @@ public class TVShowFrame extends JFrame{
         TVShow.setFont(new Font("Serif", Font.PLAIN, 18));
         TVShow.setForeground(Color.RED);
         TVShow.setBackground(Color.BLACK);
-        TVShow.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 20));
         TVShow.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        TVShow.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 20));
         navBar.add(Box.createHorizontalGlue()); // Push items to the right
         navBar.add(TVShow);
 
@@ -79,10 +93,8 @@ public class TVShowFrame extends JFrame{
         MyList.setFont(new Font("Serif", Font.PLAIN, 18));
         MyList.setForeground(Color.WHITE);
         MyList.setBackground(Color.BLACK);
-        MyList.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 20));
         MyList.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         MyList.addActionListener(e -> showListFrame());
-        MyList.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 20));
         navBar.add(Box.createHorizontalGlue()); // Push items to the right
         navBar.add(MyList);
 
@@ -108,7 +120,7 @@ public class TVShowFrame extends JFrame{
     }
 
     private JPanel createContentGrid() {
-        JPanel contentGrid = new JPanel(new GridLayout(4, 5, 10, 10));
+        contentGrid = new JPanel(new GridLayout(4, 5, 10, 10));
         contentGrid.setBackground(Color.DARK_GRAY);
         contentGrid.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
@@ -137,4 +149,33 @@ public class TVShowFrame extends JFrame{
         return contentGrid;
     }
 
+    private void filterTVShows() {
+        String searchText = searchField.getText().toLowerCase();
+        contentGrid.removeAll();
+
+        try {
+            Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/nextgenflix", "root", "");
+            Statement stmt = conn.createStatement();
+            String query = "SELECT title, description, image_path FROM tvshows WHERE LOWER(title) LIKE '%" + searchText + "%'";
+            ResultSet rs = stmt.executeQuery(query);
+
+            while (rs.next()) {
+                String title = rs.getString("title");
+                String imagePath = rs.getString("image_path");
+                String description = rs.getString("description");
+
+                JPanel moviePanel = NetflixDashboard.createMoviePanel("M", title, imagePath, description);
+                contentGrid.add(moviePanel);
+            }
+
+            rs.close();
+            stmt.close();
+            conn.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        contentGrid.revalidate();
+        contentGrid.repaint();
+    }
 }

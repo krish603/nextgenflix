@@ -1,14 +1,17 @@
 package src;
 
 import java.awt.*;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.Statement;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import javax.swing.*;
+import java.sql.*;
 
 public class MovieFrame extends JFrame {
- 
+
+    private JTextField searchField;
+    private JPanel contentGrid;
+    private JScrollPane scrollPane;
+
     public MovieFrame() {
         setTitle("Nextgenflix");
         setSize(1280, 720);
@@ -23,11 +26,28 @@ public class MovieFrame extends JFrame {
         JPanel navBar = createNavBar();
         mainPanel.add(navBar, BorderLayout.NORTH);
 
+        // Create a panel to hold both the search bar and the grid
+        JPanel topPanel = new JPanel(new BorderLayout());
+        mainPanel.add(topPanel, BorderLayout.CENTER);
+
+        // Create the search bar
+        searchField = new JTextField(20);
+        searchField.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyReleased(KeyEvent e) {
+                filterMovies();
+            }
+        });
+
+        JPanel searchPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        searchPanel.add(searchField);
+        topPanel.add(searchPanel, BorderLayout.NORTH);
+
         // Create the grid of movie thumbnails
-        JPanel contentGrid = createContentGrid();
-        JScrollPane scrollPane = new JScrollPane(contentGrid);
+        contentGrid = createContentGrid();
+        scrollPane = new JScrollPane(contentGrid);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER); // Disable horizontal scrolling
-        mainPanel.add(scrollPane, BorderLayout.CENTER);
+        topPanel.add(scrollPane, BorderLayout.CENTER);
     }
 
     public JPanel createNavBar() {
@@ -104,7 +124,6 @@ public class MovieFrame extends JFrame {
         contentGrid.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
         try {
-            // Connect to the database
             Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/nextgenflix", "root", "");
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery("SELECT title, description, image_path FROM movies");
@@ -128,43 +147,33 @@ public class MovieFrame extends JFrame {
         return contentGrid;
     }
 
-    // public JPanel createPlaceholderPanel() {
-    //     JPanel placeholderPanel = new JPanel();
-    //     placeholderPanel.setPreferredSize(new Dimension(200, 300));
-    //     placeholderPanel.setBackground(Color.DARK_GRAY);
-    //     return placeholderPanel;
-    // }
+    private void filterMovies() {
+        String searchText = searchField.getText().toLowerCase();
+        contentGrid.removeAll();
 
-    // public class MoviePanelLoader extends SwingWorker<JPanel, Void> {
-    //     private JPanel placeholderPanel;
-    //     private String title;
-    //     private String imagePath;
-    //     private String description;
+        try {
+            Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/nextgenflix", "root", "");
+            Statement stmt = conn.createStatement();
+            String query = "SELECT title, description, image_path FROM movies WHERE LOWER(title) LIKE '%" + searchText + "%'";
+            ResultSet rs = stmt.executeQuery(query);
 
-    //     public MoviePanelLoader(JPanel placeholderPanel, String title, String imagePath, String description) {
-    //         this.placeholderPanel = placeholderPanel;
-    //         this.title = title;
-    //         this.imagePath = imagePath;
-    //         this.description = description;
-    //     }
+            while (rs.next()) {
+                String title = rs.getString("title");
+                String imagePath = rs.getString("image_path");
+                String description = rs.getString("description");
 
-    //     @Override
-    //     protected JPanel doInBackground() {
-    //         return NetflixDashboard.createMoviePanel(title, imagePath, description);
-    //     }
+                JPanel moviePanel = NetflixDashboard.createMoviePanel("M", title, imagePath, description);
+                contentGrid.add(moviePanel);
+            }
 
-    //     @Override
-    //     protected void done() {
-    //         try {
-    //             JPanel moviePanel = get();
-    //             placeholderPanel.removeAll();
-    //             placeholderPanel.setLayout(new BorderLayout());
-    //             placeholderPanel.add(moviePanel);
-    //             placeholderPanel.revalidate();
-    //             placeholderPanel.repaint();
-    //         } catch (Exception e) {
-    //             e.printStackTrace();
-    //         }
-    //     }
-    // }
+            rs.close();
+            stmt.close();
+            conn.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        contentGrid.revalidate();
+        contentGrid.repaint();
+    }
 }

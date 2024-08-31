@@ -34,7 +34,7 @@ public class MyListFrame extends JFrame {
         contentPanel.add(createSectionWithTitleAndSlider("TV Shows", getTVShowsFromDatabase()));
 
         // Add the content panel to the main panel
-        JScrollPane scrollPane = new JScrollPane(contentPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        JScrollPane scrollPane = new JScrollPane(contentPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         mainPanel.add(scrollPane, BorderLayout.CENTER);
     }
 
@@ -54,9 +54,8 @@ public class MyListFrame extends JFrame {
             contentRow = createContentRowForTVShows(data);
         }
 
-        JScrollPane sliderScrollPane = new JScrollPane(contentRow, JScrollPane.VERTICAL_SCROLLBAR_NEVER, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        sliderScrollPane.getHorizontalScrollBar().setUnitIncrement(16); // Set horizontal scroll speed
-        sectionPanel.add(sliderScrollPane);
+        JScrollPane sliderScrollPane = new JScrollPane(contentRow, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        sectionPanel.add(sliderScrollPane,BorderLayout.CENTER);
 
         return sectionPanel;
     }
@@ -83,34 +82,34 @@ public class MyListFrame extends JFrame {
         navBar.add(Box.createHorizontalGlue()); // Push items to the right
         navBar.add(home);
 
-        JButton Movies = new JButton("Movies");
-        Movies.setFont(new Font("Serif", Font.PLAIN, 18));
-        Movies.setForeground(Color.WHITE);
-        Movies.setBackground(Color.BLACK);
-        Movies.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 20));
-        Movies.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        Movies.addActionListener(e -> showMovieFrame());
+        JButton movies = new JButton("Movies");
+        movies.setFont(new Font("Serif", Font.PLAIN, 18));
+        movies.setForeground(Color.WHITE);
+        movies.setBackground(Color.BLACK);
+        movies.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 20));
+        movies.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        movies.addActionListener(e -> showMovieFrame());
         navBar.add(Box.createHorizontalGlue()); // Push items to the right
-        navBar.add(Movies);
+        navBar.add(movies);
 
-        JButton TVShow = new JButton("TV Shows");
-        TVShow.setFont(new Font("Serif", Font.PLAIN, 18));
-        TVShow.setForeground(Color.WHITE);
-        TVShow.setBackground(Color.BLACK);
-        TVShow.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 20));
-        TVShow.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        TVShow.addActionListener(e -> showTVShowsFrame());
+        JButton tvShow = new JButton("TV Shows");
+        tvShow.setFont(new Font("Serif", Font.PLAIN, 18));
+        tvShow.setForeground(Color.WHITE);
+        tvShow.setBackground(Color.BLACK);
+        tvShow.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 20));
+        tvShow.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        tvShow.addActionListener(e -> showTVShowsFrame());
         navBar.add(Box.createHorizontalGlue()); // Push items to the right
-        navBar.add(TVShow);
+        navBar.add(tvShow);
 
-        JLabel MyList = new JLabel("My List");
-        MyList.setFont(new Font("Serif", Font.PLAIN, 18));
-        MyList.setForeground(Color.RED);
-        MyList.setBackground(Color.BLACK);
-        MyList.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 20));
-        MyList.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        JLabel myList = new JLabel("My List");
+        myList.setFont(new Font("Serif", Font.PLAIN, 18));
+        myList.setForeground(Color.RED);
+        myList.setBackground(Color.BLACK);
+        myList.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 20));
+        myList.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         navBar.add(Box.createHorizontalGlue()); // Push items to the right
-        navBar.add(MyList);
+        navBar.add(myList);
 
         return navBar;
     }
@@ -179,26 +178,29 @@ public class MyListFrame extends JFrame {
         try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/nextgenflix", "root", "");
              PreparedStatement statement = connection.prepareStatement(query);
              ResultSet resultSet = statement.executeQuery()) {
-
-            // Count the number of rows in the ResultSet
-            int rowCount = resultSet.getRow();
-
-            // Create a 2D array to hold the data
-            String[][] data = new String[rowCount][3];
-            int index = 0;
-
+    
+            // Use a temporary list to store data
+            java.util.List<String[]> dataList = new java.util.ArrayList<>();
+    
             while (resultSet.next()) {
-                data[index][0] = resultSet.getString("title");
-                data[index][1] = resultSet.getString("image_path");
-                data[index][2] = resultSet.getString("description");
-                index++;
+                String title = resultSet.getString("title");
+                String imagePath = resultSet.getString("image_path");
+                String description = resultSet.getString("description");
+                dataList.add(new String[]{title, imagePath, description});
             }
-
+    
+            // Convert the list to a 2D array
+            String[][] data = new String[dataList.size()][3];
+            for (int i = 0; i < dataList.size(); i++) {
+                data[i] = dataList.get(i);
+            }
+    
             return data;
-
+    
         } catch (SQLException e) {
             e.printStackTrace();
             return new String[0][0];
         }
     }
+    
 }
