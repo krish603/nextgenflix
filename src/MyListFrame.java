@@ -1,12 +1,16 @@
 package src;
 
 import java.awt.*;
-
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import javax.swing.*;
 
-public class MyListFrame extends JFrame{
+public class MyListFrame extends JFrame {
     private JPanel contentRow;
- 
+
     public MyListFrame() {
         setTitle("Nextgenflix");
         setSize(1280, 720);
@@ -19,22 +23,22 @@ public class MyListFrame extends JFrame{
 
         // Create the top navigation bar
         JPanel navBar = createNavBar();
-        mainPanel.add(navBar,BorderLayout.NORTH);
+        mainPanel.add(navBar, BorderLayout.NORTH);
 
-        // Create the content panel with movies, TV shows, and Top 10 sections
+        // Create the content panel with movies and TV shows sections
         JPanel contentPanel = new JPanel();
         contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
 
-        contentPanel.add(createSectionWithTitleAndSlider("Movies", getMovieImagePaths()));
+        contentPanel.add(createSectionWithTitleAndSlider("Movies", getMoviesFromDatabase()));
 
-        contentPanel.add(createSectionWithTitleAndSlider("TV Shows", getTVShowImagePaths()));
+        contentPanel.add(createSectionWithTitleAndSlider("TV Shows", getTVShowsFromDatabase()));
 
         // Add the content panel to the main panel
         JScrollPane scrollPane = new JScrollPane(contentPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         mainPanel.add(scrollPane, BorderLayout.CENTER);
     }
 
-    private JPanel createSectionWithTitleAndSlider(String title, String[] imagePaths) {
+    private JPanel createSectionWithTitleAndSlider(String title, String[][] data) {
         JPanel sectionPanel = new JPanel();
         sectionPanel.setLayout(new BoxLayout(sectionPanel, BoxLayout.Y_AXIS));
 
@@ -45,11 +49,10 @@ public class MyListFrame extends JFrame{
         sectionPanel.add(sectionTitle);
 
         if (title.equals("Movies")) {
-            contentRow = createContentRowForMovies(imagePaths);
+            contentRow = createContentRowForMovies(data);
         } else {
-            contentRow = createContentRowForTVShows(imagePaths);
+            contentRow = createContentRowForTVShows(data);
         }
-
 
         JScrollPane sliderScrollPane = new JScrollPane(contentRow, JScrollPane.VERTICAL_SCROLLBAR_NEVER, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         sliderScrollPane.getHorizontalScrollBar().setUnitIncrement(16); // Set horizontal scroll speed
@@ -77,7 +80,6 @@ public class MyListFrame extends JFrame{
         home.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 20));
         home.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         home.addActionListener(e -> showDashBoardFrame());
-        home.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 20));
         navBar.add(Box.createHorizontalGlue()); // Push items to the right
         navBar.add(home);
 
@@ -88,7 +90,6 @@ public class MyListFrame extends JFrame{
         Movies.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 20));
         Movies.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         Movies.addActionListener(e -> showMovieFrame());
-        Movies.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 20));
         navBar.add(Box.createHorizontalGlue()); // Push items to the right
         navBar.add(Movies);
 
@@ -99,7 +100,6 @@ public class MyListFrame extends JFrame{
         TVShow.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 20));
         TVShow.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         TVShow.addActionListener(e -> showTVShowsFrame());
-        TVShow.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 20));
         navBar.add(Box.createHorizontalGlue()); // Push items to the right
         navBar.add(TVShow);
 
@@ -109,7 +109,6 @@ public class MyListFrame extends JFrame{
         MyList.setBackground(Color.BLACK);
         MyList.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 20));
         MyList.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        MyList.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 20));
         navBar.add(Box.createHorizontalGlue()); // Push items to the right
         navBar.add(MyList);
 
@@ -134,16 +133,15 @@ public class MyListFrame extends JFrame{
         tvshow.setVisible(true);
     }
 
-    private JPanel createContentRowForMovies(String[] imagePaths) {
+    private JPanel createContentRowForMovies(String[][] data) {
         JPanel contentRow = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
         contentRow.setBackground(Color.DARK_GRAY);
 
-        int count = 0;
         // Load all images in the row
-        for (String imagePath : imagePaths) {
-            count++;
-            String title = "Movie "+count;
-            String description = "This is the description for " + title + ".";
+        for (String[] movieData : data) {
+            String title = movieData[0];
+            String imagePath = movieData[1];
+            String description = movieData[2];
             JPanel moviePanel = NetflixDashboard.createMoviePanel("M", title, imagePath, description);
             contentRow.add(moviePanel);
         }
@@ -151,63 +149,56 @@ public class MyListFrame extends JFrame{
         return contentRow;
     }
 
-    private JPanel createContentRowForTVShows(String[] imagePaths) {
+    private JPanel createContentRowForTVShows(String[][] data) {
         JPanel contentRow = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
         contentRow.setBackground(Color.DARK_GRAY);
 
-        int count = 0;
         // Load all images in the row
-        for (String imagePath : imagePaths) {
-            count++;
-            String title = "TV Show "+count;
-            String description = "This is the description for " + title + ".";
-            JPanel moviePanel = NetflixDashboard.createMoviePanel("", title, imagePath, description);
-            contentRow.add(moviePanel);
+        for (String[] tvShowData : data) {
+            String title = tvShowData[0];
+            String imagePath = tvShowData[1];
+            String description = tvShowData[2];
+            JPanel tvShowPanel = NetflixDashboard.createMoviePanel("", title, imagePath, description);
+            contentRow.add(tvShowPanel);
         }
 
         return contentRow;
     }
 
-    // Dummy data for movie image paths
-    private String[] getMovieImagePaths() {
-        return new String[]{
-            "assets/img/Posters/12_2_929c555a-bd2c-4d1f-b1c8-9d0cf2e88615.png",
-            "assets/img/Posters/29_2_362c9118-1045-4fcb-b4ad-d8d83831da70.png",
-            "assets/img/Posters/34_2_2fc257d7-11e8-4ffe-87a1-bade8b297d88.png",
-            "assets/img/Posters/Oppenheimer.png",
-            "assets/img/Posters/61jBc4kTVSL._AC_UF1000,1000_QL80_.png",
-            "assets/img/Posters/71FbCxxC4zL._AC_UF894,1000_QL80_.png",
-            // "assets/img/Posters/action-movie-poster-template-design-0f5fff6262fdefb855e3a9a3f0fdd361_screen.png",
-            // "assets/img/Posters/adventure-movie-poster-template-design-7b13ea2ab6f64c1ec9e1bb473f345547_screen.png",
-            // "assets/img/Posters/f7eb970d-97f6-420e-9964-547aaae1898b-min.png",
-            // "assets/img/Posters/ff8be05a431a19f15e66ac789b1a99b0.png",
-            // "assets/img/Posters/gg.png",
-            // "assets/img/Posters/ggggggg.png",
-            // "assets/img/Posters/mn-min.png",
-            // "assets/img/Posters/modern-movie-poster-template-design-dcab0ce86a7861c1c9b8d2c5d8f55e0a_screen.png",
-            // "assets/img/Posters/nollywood-movie-posters-nigerian.png",
-            // "assets/img/Posters/old-movie-poster.png"
-        };
+    private String[][] getMoviesFromDatabase() {
+        String query = "SELECT title, image_path, description FROM movies WHERE is_in_watchlist = true";
+        return fetchDataFromDatabase(query);
     }
 
-    // Dummy data for TV show image paths
-    private String[] getTVShowImagePaths() {
-        return new String[]{
-            "assets/img/Posters/tvshow1.png",
-            "assets/img/Posters/tvshow2.png",
-            "assets/img/Posters/tvshow3.png",
-            "assets/img/Posters/tvshow4.png",
-            "assets/img/Posters/tvshow5.png",
-            "assets/img/Posters/tvshow6.png",
-            // "assets/img/Posters/tvshow7.png",
-            // "assets/img/Posters/tvshow8.png",
-            // "assets/img/Posters/tvshow9.png",
-            // "assets/img/Posters/tvshow10.png",
-            // "assets/img/Posters/tvshow11.png",
-            // "assets/img/Posters/tvshow12.png",
-            // "assets/img/Posters/tvshow13.png",
-            // "assets/img/Posters/tvshow14.png",
-            // "assets/img/Posters/tvshow15.png"
-        };
+    private String[][] getTVShowsFromDatabase() {
+        String query = "SELECT title, image_path, description FROM tvshows WHERE is_in_watchlist = true";
+        return fetchDataFromDatabase(query);
+    }
+
+    private String[][] fetchDataFromDatabase(String query) {
+        try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/nextgenflix", "root", "");
+             PreparedStatement statement = connection.prepareStatement(query);
+             ResultSet resultSet = statement.executeQuery()) {
+
+            // Count the number of rows in the ResultSet
+            int rowCount = resultSet.getRow();
+
+            // Create a 2D array to hold the data
+            String[][] data = new String[rowCount][3];
+            int index = 0;
+
+            while (resultSet.next()) {
+                data[index][0] = resultSet.getString("title");
+                data[index][1] = resultSet.getString("image_path");
+                data[index][2] = resultSet.getString("description");
+                index++;
+            }
+
+            return data;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return new String[0][0];
+        }
     }
 }

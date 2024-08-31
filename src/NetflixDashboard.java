@@ -2,6 +2,10 @@ package src;
 
 import javax.swing.*;
 import java.awt.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
 
 public class NetflixDashboard extends JFrame {
     private JPanel contentRow;
@@ -130,9 +134,9 @@ public class NetflixDashboard extends JFrame {
         sectionPanel.add(sectionTitle);
 
         if (title.equals("Movies")) {
-            contentRow = createContentRowForMovies(imagePaths);
+            contentRow = createContentRowForMovies();
         } else if (title.equals("TV Shows")) {
-            contentRow = createContentRowForTVShows(imagePaths);
+            contentRow = createContentRowForTVShows();
         } else if (title.equals("Best Movies")) {
             contentRow = createContentRowForBestMovies(imagePaths);
         } else {
@@ -147,35 +151,59 @@ public class NetflixDashboard extends JFrame {
         return sectionPanel;
     }
 
-    private JPanel createContentRowForMovies(String[] imagePaths) {
+    private JPanel createContentRowForMovies() {
         JPanel contentRow = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
         contentRow.setBackground(Color.DARK_GRAY);
 
-        int count = 0;
-        // Load all images in the row
-        for (String imagePath : imagePaths) {
-            count++;
-            String title = "Movie "+count;
-            String description = "This is the description for " + title + ".";
-            JPanel moviePanel = createMoviePanel("M",title, imagePath, description);
-            contentRow.add(moviePanel);
+        try {
+            // Connect to the database
+            Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/nextgenflix", "root", "");
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery("SELECT title, description, image_path FROM movies");
+
+            while (rs.next()) {
+                String title = rs.getString("title");
+                String imagePath = rs.getString("image_path");
+                String description = rs.getString("description");
+
+                JPanel moviePanel = NetflixDashboard.createMoviePanel("M", title, imagePath, description);
+                contentRow.add(moviePanel);
+            }
+
+            rs.close();
+            stmt.close();
+            conn.close();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
         return contentRow;
     }
 
-    private JPanel createContentRowForTVShows(String[] imagePaths) {
+    private JPanel createContentRowForTVShows() {
         JPanel contentRow = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
         contentRow.setBackground(Color.DARK_GRAY);
 
-        int count = 0;
-        // Load all images in the row
-        for (String imagePath : imagePaths) {
-            count++;
-            String title = "TV Show "+count;
-            String description = "This is the description for " + title + ".";
-            JPanel moviePanel = createMoviePanel("",title, imagePath, description);
-            contentRow.add(moviePanel);
+        try {
+            // Connect to the database
+            Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/nextgenflix", "root", "");
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery("SELECT title, description, image_path FROM tvshows");
+
+            while (rs.next()) {
+                String title = rs.getString("title");
+                String imagePath = rs.getString("image_path");
+                String description = rs.getString("description");
+
+                JPanel moviePanel = NetflixDashboard.createMoviePanel("", title, imagePath, description);
+                contentRow.add(moviePanel);
+            }
+
+            rs.close();
+            stmt.close();
+            conn.close();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
         return contentRow;

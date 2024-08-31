@@ -162,3 +162,5 @@ public class MovieDetailFrame extends JFrame {
         }
     }
 }
+
+
