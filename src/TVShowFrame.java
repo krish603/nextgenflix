@@ -1,5 +1,6 @@
 package src;
 
+import java.util.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.sql.Connection;
@@ -12,6 +13,7 @@ public class TVShowFrame extends JFrame {
 
     private JTextField searchField;
     private JPanel contentGrid;
+    private LinkedList<TVShow> tvShowList = new LinkedList<>();
 
     public TVShowFrame() {
         setTitle("Nextgenflix");
@@ -49,7 +51,12 @@ public class TVShowFrame extends JFrame {
         JScrollPane scrollPane = new JScrollPane(contentGrid);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER); // Disable horizontal scrolling
         topPanel.add(scrollPane, BorderLayout.CENTER);
+
+        // Load TV shows into LinkedList
+        loadTVShows();
+        displayTVShows();
     }
+
 
     public JPanel createNavBar() {
         JPanel navBar = new JPanel();
@@ -123,9 +130,11 @@ public class TVShowFrame extends JFrame {
         contentGrid = new JPanel(new GridLayout(4, 5, 10, 10));
         contentGrid.setBackground(Color.DARK_GRAY);
         contentGrid.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        return contentGrid;
+    }
 
+    private void loadTVShows() {
         try {
-            // Connect to the database
             Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/nextgenflix", "root", "");
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery("SELECT title, description, image_path FROM tvshows");
@@ -135,8 +144,8 @@ public class TVShowFrame extends JFrame {
                 String imagePath = rs.getString("image_path");
                 String description = rs.getString("description");
 
-                JPanel moviePanel = NetflixDashboard.createMoviePanel("", title, imagePath, description);
-                contentGrid.add(moviePanel);
+                // Add each TV show to the LinkedList
+                tvShowList.add(new TVShow(title, description, imagePath));
             }
 
             rs.close();
@@ -145,37 +154,55 @@ public class TVShowFrame extends JFrame {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
 
-        return contentGrid;
+    private void displayTVShows() {
+        contentGrid.removeAll();
+        for (TVShow tvShow : tvShowList) {
+            JPanel moviePanel = NetflixDashboard.createMoviePanel("T", tvShow.getTitle(), tvShow.getImagePath(), tvShow.getDescription());
+            contentGrid.add(moviePanel);
+        }
+        contentGrid.revalidate();
+        contentGrid.repaint();
     }
 
     private void filterTVShows() {
         String searchText = searchField.getText().toLowerCase();
         contentGrid.removeAll();
 
-        try {
-            Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/nextgenflix", "root", "");
-            Statement stmt = conn.createStatement();
-            String query = "SELECT title, description, image_path FROM tvshows WHERE LOWER(title) LIKE '%" + searchText + "%'";
-            ResultSet rs = stmt.executeQuery(query);
-
-            while (rs.next()) {
-                String title = rs.getString("title");
-                String imagePath = rs.getString("image_path");
-                String description = rs.getString("description");
-
-                JPanel moviePanel = NetflixDashboard.createMoviePanel("M", title, imagePath, description);
+        for (TVShow tvShow : tvShowList) {
+            if (tvShow.getTitle().toLowerCase().contains(searchText)) {
+                JPanel moviePanel = NetflixDashboard.createMoviePanel("T", tvShow.getTitle(), tvShow.getImagePath(), tvShow.getDescription());
                 contentGrid.add(moviePanel);
             }
-
-            rs.close();
-            stmt.close();
-            conn.close();
-        } catch (Exception e) {
-            e.printStackTrace();
         }
 
         contentGrid.revalidate();
         contentGrid.repaint();
+    }
+
+    // TVShow class as a simple data structure for LinkedList
+    class TVShow {
+        private String title;
+        private String description;
+        private String imagePath;
+
+        public TVShow(String title, String description, String imagePath) {
+            this.title = title;
+            this.description = description;
+            this.imagePath = imagePath;
+        }
+
+        public String getTitle() {
+            return title;
+        }
+
+        public String getDescription() {
+            return description;
+        }
+
+        public String getImagePath() {
+            return imagePath;
+        }
     }
 }
