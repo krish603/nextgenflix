@@ -2,19 +2,19 @@ package src;
 
 import javax.swing.*;
 import java.awt.*;
-// import java.awt.event.ActionEvent;
-// import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class MovieDetailFrame extends JFrame {
 
     private String title;
     private String type; // To distinguish between Movie and TV Show
+    private JLabel ratingLabel; // Declare the rating label
 
     public MovieDetailFrame(String type, String title, String imagePath, String description) {
         this.title = title;
@@ -60,13 +60,16 @@ public class MovieDetailFrame extends JFrame {
         descriptionArea.setBounds(220, 50, 350, 100);
         mainPanel.add(descriptionArea);
 
-        JLabel rating = new JLabel("Rating : 9.5");
-        rating.setFont(new Font("Serif", Font.PLAIN, 16));
-        rating.setForeground(Color.WHITE);
-        rating.setBounds(220, 160, 200, 30);
-        mainPanel.add(rating);
+        // Fetch the rating from the database
+        float fetchedRating = fetchRatingFromDatabase();
 
-        JLabel rate = new JLabel("Rate (Out of 10) : ");
+        ratingLabel = new JLabel("Rating: " + fetchedRating);
+        ratingLabel.setFont(new Font("Serif", Font.PLAIN, 16));
+        ratingLabel.setForeground(Color.WHITE);
+        ratingLabel.setBounds(220, 160, 200, 30);
+        mainPanel.add(ratingLabel);
+
+        JLabel rate = new JLabel("Rate (Out of 10): ");
         rate.setFont(new Font("Serif", Font.PLAIN, 16));
         rate.setForeground(Color.WHITE);
         rate.setBounds(220, 200, 150, 30);
@@ -105,6 +108,7 @@ public class MovieDetailFrame extends JFrame {
                     float ratingValue = Float.parseFloat(ratingText);
                     if (ratingValue >= 0 && ratingValue <= 10) {
                         updateRatingInDatabase(ratingValue);
+                        ratingLabel.setText("Rating: " + ratingValue); // Update the rating label
                         JOptionPane.showMessageDialog(this, "Rated successfully", "Success", JOptionPane.INFORMATION_MESSAGE);
                     } else {
                         JOptionPane.showMessageDialog(this, "Please enter a rating between 0 and 10", "Error", JOptionPane.ERROR_MESSAGE);
@@ -138,6 +142,22 @@ public class MovieDetailFrame extends JFrame {
         }
     }
 
+    private float fetchRatingFromDatabase() {
+        String query = "SELECT rating FROM " + type + " WHERE title = ?";
+        float ratingValue = 0.0f;
+        try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/nextgenflix", "root", "");
+             PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setString(1, title);
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                ratingValue = resultSet.getFloat("rating");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return ratingValue;
+    }
+
     private void updateRatingInDatabase(float ratingValue) {
         String query = "UPDATE " + type + " SET rating = ? WHERE title = ?";
         try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/nextgenflix", "root", "");
@@ -162,5 +182,3 @@ public class MovieDetailFrame extends JFrame {
         }
     }
 }
-
-

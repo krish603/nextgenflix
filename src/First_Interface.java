@@ -120,7 +120,7 @@ public class First_Interface extends JFrame {
             } else {
                 JOptionPane.showMessageDialog(this, "Invalid username or password", "Login Error", JOptionPane.ERROR_MESSAGE);
             }
-        });
+        }); 
         loginPanel.add(loginButton);
 
         // Set the custom panel as the content pane of the frame
