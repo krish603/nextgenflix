@@ -102,7 +102,7 @@ public class MovieFrame extends JFrame {
 
     private void showDashBoardFrame() {
         this.setVisible(false);
-        NetflixDashboard dashboard = new NetflixDashboard();
+        NextgenflixDashboard dashboard = new NextgenflixDashboard();
         dashboard.setVisible(true);
     }
 
@@ -133,7 +133,7 @@ public class MovieFrame extends JFrame {
                 String imagePath = rs.getString("image_path");
                 String description = rs.getString("description");
 
-                JPanel moviePanel = NetflixDashboard.createMoviePanel("M", title, imagePath, description);
+                JPanel moviePanel = NextgenflixDashboard.createMoviePanel("M", title, imagePath, description);
                 contentGrid.add(moviePanel);
             }
 
@@ -162,7 +162,7 @@ public class MovieFrame extends JFrame {
                 String imagePath = rs.getString("image_path");
                 String description = rs.getString("description");
 
-                JPanel moviePanel = NetflixDashboard.createMoviePanel("M", title, imagePath, description);
+                JPanel moviePanel = NextgenflixDashboard.createMoviePanel("M", title, imagePath, description);
                 contentGrid.add(moviePanel);
             }
 

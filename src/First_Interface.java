@@ -114,7 +114,7 @@ public class First_Interface extends JFrame {
             boolean authenticated = UserAuthenticator.authenticate(username, password);
             if (authenticated) { 
                 this.dispose();
-                NetflixDashboard netflixDashboard = new NetflixDashboard();
+                NextgenflixDashboard netflixDashboard = new NextgenflixDashboard();
                 netflixDashboard.setVisible(true);
                 System.out.println("Authentication Succesfull");
             } else {

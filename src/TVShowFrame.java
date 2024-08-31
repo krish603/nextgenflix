@@ -110,7 +110,7 @@ public class TVShowFrame extends JFrame {
 
     private void showDashBoardFrame() {
         this.setVisible(false);
-        NetflixDashboard dashboard = new NetflixDashboard();
+        NextgenflixDashboard dashboard = new NextgenflixDashboard();
         dashboard.setVisible(true);
     }
 
@@ -159,7 +159,7 @@ public class TVShowFrame extends JFrame {
     private void displayTVShows() {
         contentGrid.removeAll();
         for (TVShow tvShow : tvShowList) {
-            JPanel moviePanel = NetflixDashboard.createMoviePanel("T", tvShow.getTitle(), tvShow.getImagePath(), tvShow.getDescription());
+            JPanel moviePanel = NextgenflixDashboard.createMoviePanel("T", tvShow.getTitle(), tvShow.getImagePath(), tvShow.getDescription());
             contentGrid.add(moviePanel);
         }
         contentGrid.revalidate();
@@ -172,7 +172,7 @@ public class TVShowFrame extends JFrame {
 
         for (TVShow tvShow : tvShowList) {
             if (tvShow.getTitle().toLowerCase().contains(searchText)) {
-                JPanel moviePanel = NetflixDashboard.createMoviePanel("T", tvShow.getTitle(), tvShow.getImagePath(), tvShow.getDescription());
+                JPanel moviePanel = NextgenflixDashboard.createMoviePanel("T", tvShow.getTitle(), tvShow.getImagePath(), tvShow.getDescription());
                 contentGrid.add(moviePanel);
             }
         }

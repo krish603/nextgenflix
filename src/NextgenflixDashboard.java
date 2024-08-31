@@ -7,11 +7,11 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
-public class NetflixDashboard extends JFrame {
+public class NextgenflixDashboard extends JFrame {
     private JPanel contentRow;
     public JPanel sectionPanel;
 
-    public NetflixDashboard() {
+    public NextgenflixDashboard() {
         setTitle("Nextgenflix");
         setSize(1280, 720);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -40,9 +40,6 @@ public class NetflixDashboard extends JFrame {
         // Add the content panel to the main panel
         JScrollPane scrollPane1 = new JScrollPane(contentPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         mainPanel.add(scrollPane1, BorderLayout.CENTER);
-
-        JScrollPane scrollPane2 = new JScrollPane(sectionPanel , JScrollPane.VERTICAL_SCROLLBAR_NEVER, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        contentPanel.add(scrollPane2);
 
         // Make the frame visible
         setVisible(true);
@@ -145,7 +142,7 @@ public class NetflixDashboard extends JFrame {
 
 
         JScrollPane sliderScrollPane = new JScrollPane(contentRow, JScrollPane.VERTICAL_SCROLLBAR_NEVER, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        sliderScrollPane.getHorizontalScrollBar().setUnitIncrement(16); // Set horizontal scroll speed
+        sliderScrollPane.getHorizontalScrollBar().setUnitIncrement(16); 
         sectionPanel.add(sliderScrollPane);
 
         return sectionPanel;
@@ -166,7 +163,7 @@ public class NetflixDashboard extends JFrame {
                 String imagePath = rs.getString("image_path");
                 String description = rs.getString("description");
 
-                JPanel moviePanel = NetflixDashboard.createMoviePanel("M", title, imagePath, description);
+                JPanel moviePanel = NextgenflixDashboard.createMoviePanel("M", title, imagePath, description);
                 contentRow.add(moviePanel);
             }
 
@@ -195,7 +192,7 @@ public class NetflixDashboard extends JFrame {
                 String imagePath = rs.getString("image_path");
                 String description = rs.getString("description");
 
-                JPanel moviePanel = NetflixDashboard.createMoviePanel("", title, imagePath, description);
+                JPanel moviePanel = NextgenflixDashboard.createMoviePanel("", title, imagePath, description);
                 contentRow.add(moviePanel);
             }
 
@@ -445,7 +442,7 @@ public class NetflixDashboard extends JFrame {
     
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(NetflixDashboard::new);
+        SwingUtilities.invokeLater(NextgenflixDashboard::new);
     }
 }
 
