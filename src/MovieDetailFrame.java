@@ -148,7 +148,7 @@ public class MovieDetailFrame extends JFrame {
         try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/nextgenflix", "root", "");
              PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, title);
-            ResultSet resultSet = statement.executeQuery();
+            ResultSet resultSet = statement.executeQuery(); 
             if (resultSet.next()) {
                 ratingValue = resultSet.getFloat("rating");
             }
